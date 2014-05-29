@@ -1,0 +1,14 @@
+{
+  "name": "jquery-reveal",
+  "homepage": "https://github.com/VitalikL/reveal",
+  "_release": "be167faad5",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "be167faad531b4903f223b71125da6afcb38bf85"
+  },
+  "_source": "git://github.com/VitalikL/reveal.git",
+  "_target": "*",
+  "_originalSource": "jquery-reveal",
+  "_direct": true
+}

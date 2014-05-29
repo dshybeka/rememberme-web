@@ -1,0 +1,1 @@
+RemembermeWeb.SigninView = Em.View.extend();

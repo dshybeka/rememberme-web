@@ -1,0 +1,62 @@
+$icon-font-path: "../styles/fonts/"; // Change the path to the fonts
+@import "bootstrap-sass/lib/bootstrap";
+
+html, body {
+    margin: 30px 0;
+}
+
+figure { 
+  float: left; 
+  margin: 0 20px 0 0; 
+  background: white;
+  border: 10px solid white; 
+  -webkit-box-shadow: 0 3px 10px #ccc; 
+  -moz-box-shadow: 0 3px 10px #ccc;
+  -webkit-transition: all 0.7s ease; 
+  -moz-transition: all 1s ease;
+  position: relative;
+}
+
+.rotate-left {
+  -webkit-transform: rotate(5deg);
+  -moz-transform: rotate(5deg);
+}
+
+.rotate-right {
+  -webkit-transform: rotate(-5deg);
+  -moz-transform: rotate(-5deg);
+}
+
+figcaption { 
+  text-align: center; 
+  display: block; 
+  font-size: 12px; 
+  font-style: italic; 
+}
+
+hr.restrict {
+  margin-bottom: 40px;
+}
+
+h4.restrict {
+  margin-bottom: 50px;
+}
+
+h1.padding-top {
+  padding-top: 50px;
+}
+
+em {
+  color: yellowgreen;
+}
+
+div.small-margin-top {
+  margin-top: 40px;
+}
+
+
+.select-images a img:hover {
+  -webkit-filter: none; /*Returns to default state*/
+}
+
+.grayscale {-webkit-filter: grayscale(100%);}

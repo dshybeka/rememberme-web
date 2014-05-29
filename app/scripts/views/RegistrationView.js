@@ -1,0 +1,1 @@
+RemembermeWeb.RegistrationView = Em.View.extend();

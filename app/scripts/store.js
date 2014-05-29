@@ -1,0 +1,1 @@
+RemembermeWeb.ApplicationAdapter = DS.FixtureAdapter;
