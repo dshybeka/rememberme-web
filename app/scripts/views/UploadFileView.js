@@ -2,7 +2,6 @@ RemembermeWeb.UploadFileView = Em.View.extend({
   didInsertElement : function(){
 
     var applicationController = window.RemembermeWeb.__container__.lookup('controller:application');
-    console.log("applicationController " + applicationController.userId);
 
     this._super();
     Dropzone.autoDiscover = false;
