@@ -2,13 +2,43 @@ RemembermeWeb.SigninController = Ember.Controller.extend({
 
   actions: {
       login: function() {
+
+          var applicationController = this.controllerFor('application');
+
+          var self = this;
           var data = {
-              email: this.get('email'),
+              username: this.get('email'),
               password: this.get('password')
           };
+
+          self.set('errorMessage', null);
           Ember.$.post('http://localhost:8090/RememberMe/api/login', data).then(function(response) {
-              console.log("response " + response);
+              
+              console.log("response " + response.token);
+              if (response.token) {
+                applicationController.set('token', response.token);
+                console.log("setted token");
+                var attemptedTransition = self.get('attemptedTransition');
+                if (attemptedTransition) {
+                  console.log("retry");
+                  attemptedTransition.retry();
+                  self.set('attemptedTransition', null);
+                } else {
+                  console.log("simple");
+                  self.transitionToRoute('selectMain');
+                }
+              }
+          }, function() {
+            self.set('errorMessage', "Wrong email or password");
           });
       }
+  },
+
+  reset: function() {
+    this.setProperties({
+      email: "",
+      password: "",
+      errorMessage: ""
+    });
   }
 })

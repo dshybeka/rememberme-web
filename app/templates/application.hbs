@@ -9,18 +9,18 @@
         </div>
 
         <ul class="nav navbar-nav navbar-right">
-            <li>{{#link-to "signin"}}Sign in{{/link-to}}</li>
+
+            {{#if token}}
+                <li {{action "logout" this}}>{{#link-to "index"}}Logout{{/link-to}}</li>
+            {{else}}
+                <li>{{#link-to "signin"}}Sign in{{/link-to}}</li>
+            {{/if}}
+            
             <li>{{#link-to "registration"}}Register me{{/link-to}}</li>
         </ul>
 
     </nav>
     <div class="container" id="main" style="height: 500px">
         {{animated-outlet name="main"}}
-    </div>
-
-    <div id="sign-in-modal" class="reveal-modal">
-        <h1>Modal Title</h1>
-        <p>Any content could go in here.</p>
-        <a class="close-reveal-modal">&#215;</a>
     </div>
 </div>

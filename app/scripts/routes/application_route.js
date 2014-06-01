@@ -1,2 +1,2 @@
-RemembermeWeb.ApplicationRoute = Ember.Route.extend({
+RemembermeWeb.ApplicationRoute = RemembermeWeb.AuthentificatedRoute.extend({
 });

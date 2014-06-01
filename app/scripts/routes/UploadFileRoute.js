@@ -1,1 +1,1 @@
-RemembermeWeb.UploadFileRoute = Ember.Route.extend();
+RemembermeWeb.UploadFileRoute = RemembermeWeb.AuthentificatedRoute.extend();
