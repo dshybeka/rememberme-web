@@ -14,17 +14,18 @@ RemembermeWeb.SigninController = Ember.Controller.extend({
           self.set('errorMessage', null);
           Ember.$.post('http://localhost:8090/RememberMe/api/login', data).then(function(response) {
               
-              console.log("response " + response.token);
+
               if (response.token) {
+
                 applicationController.set('token', response.token);
-                console.log("setted token");
+
                 var attemptedTransition = self.get('attemptedTransition');
                 if (attemptedTransition) {
-                  console.log("retry");
+
                   attemptedTransition.retry();
                   self.set('attemptedTransition', null);
                 } else {
-                  console.log("simple");
+
                   self.transitionToRoute('selectMain');
                 }
               }

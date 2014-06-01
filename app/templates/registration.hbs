@@ -4,16 +4,20 @@
 
 <div class="col-md-6">
 
-  <form role="form">
+  {{#if errorMessage}}
+    <div class="alert alert-danger">{{errorMessage}}</div>
+  {{/if}}
+
+  <form role="form" {{action register on="submit"}} >
       
       <div class="form-group">
-          <label for="user-email">Enter you email here</label>
-          <input type="email" class="form-control" id="user-email" placeholder="Email">
+          <label for="r-user-email">Enter you email here</label>
+          {{input value=email  class="form-control" id="r-user-email" placeholder="Email" type="email"}}
       </div>
 
       <div class="form-group">
-          <label for="user-password">And password here</label>
-          <input type="password" class="form-control" id="user-password" placeholder="Password">
+          <label for="r-user-password">And password here</label>
+          {{input value=password type="password" class="form-control" id="r-user-password" placeholder="Password" type="password"}}
       </div>
 
       <button type="submit" class="btn btn-default">Register!</button>
