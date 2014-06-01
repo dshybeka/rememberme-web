@@ -18,7 +18,7 @@ RemembermeWeb.RegistrationController = Ember.Controller.extend({
               data: data,
               async: false
           }).then(function(response) {
-console.log("done");
+
               if (!response.success) {
                 console.log("not sucdcess " + response.message);
                 self.set('errorMessage', response.message);

@@ -4,6 +4,8 @@ RemembermeWeb.Router.map(function () {
 
   this.resource('selectMain', { path : '/selectMain' });
 
+  this.resource('myFriends', { path : '/myFriends' });
+
   this.resource('uploadFile', { path : '/uploadFile' });
 
   this.resource('sayCheese', { path : '/sayCheese' });

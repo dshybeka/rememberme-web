@@ -1,12 +1,16 @@
 RemembermeWeb.UploadFileView = Em.View.extend({
   didInsertElement : function(){
+
+    var applicationController = window.RemembermeWeb.__container__.lookup('controller:application');
+    console.log("applicationController " + applicationController.userId);
+
     this._super();
     Dropzone.autoDiscover = false;
 
     Dropzone.options.filedropzone = {
         addRemoveLinks: true,
         previewsContainer: "#previews",
-        url: "http://localhost:8080/remember-me/user/"
+        url: "http://localhost:8090/RememberMe/user/" + applicationController.userId + "/photo"
     };
 
 

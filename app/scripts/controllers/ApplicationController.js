@@ -5,6 +5,11 @@ RemembermeWeb.ApplicationController = Ember.Controller.extend({
     localStorage.token = this.get('token');
   }.observes('token'),
 
+  userId: localStorage.userId == null ? "" : localStorage.userId,
+  tokenChanged: function() {
+    localStorage.userId = this.get('userId');
+  }.observes('userId'),
+
   actions: {
       logout: function() {
         console.log('logout!');

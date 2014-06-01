@@ -17,6 +17,7 @@ RemembermeWeb.SigninController = Ember.Controller.extend({
 
               if (response.token) {
 
+                applicationController.set('userId', response.userId);
                 applicationController.set('token', response.token);
 
                 var attemptedTransition = self.get('attemptedTransition');
