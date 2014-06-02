@@ -1,9 +1,11 @@
 RemembermeWeb.RegistrationController = Ember.Controller.extend({
 
+  needs: ["application"],
+
   actions: {
       register: function() {
 
-          var applicationController = this.controllerFor('application');
+          var applicationController = this.get('controllers.application');
 
           var self = this;
           var data = {

@@ -1,9 +1,11 @@
 RemembermeWeb.SigninController = Ember.Controller.extend({
 
+  needs: ["application"],
+  
   actions: {
       login: function() {
 
-          var applicationController = this.controllerFor('application');
+          var applicationController = this.get('controllers.application');
 
           var self = this;
           var data = {
