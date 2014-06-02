@@ -6,6 +6,8 @@ RemembermeWeb.Router.map(function () {
 
   this.resource('myFriends', { path : '/myFriends' });
 
+  this.resource('photoDetails', { path : '/myFriends/photoDetails' });
+
   this.resource('uploadFile', { path : '/uploadFile' });
 
   this.resource('sayCheese', { path : '/sayCheese' });

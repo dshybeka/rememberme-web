@@ -19,6 +19,10 @@ RemembermeWeb.AuthentificatedRoute = Ember.Route.extend({
 
     var result = false;
     var curToken = this.controllerFor('application').get('token');
+    if (curToken == '') {
+      curToken = localStorage.token;
+    }
+    console.log("curToken " + curToken);
 
     $.ajax({
         url: "http://localhost:8090/RememberMe/api/validate",
