@@ -3,25 +3,23 @@
 <hr class="restrict">
 
 <div class="row">
-  <h4>Photo: {{photo.name}}</h4>
+  <h4>Photo: {{model.name}} | Uploaded: {{model.createDate}}</h4>
 </div>
 
 <div class="row">
 
-  {{#each photoDetail in photoDetails}}
-    <div class="media">
-      <a class="pull-left" href="#">
-        <img class="media-object" {{bind-attr src=photoDetail.url}} width="100px" height="100px">
-      </a>
-      <div class="media-body">
-        <h4 class="media-heading">{{photoDetail.name}}</h4>
-        Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-      </div>
-    </div>
-  {{/each}}
+<img class="media-object" {{bind-attr src=model.url}} {{bind-attr height=model.height}} {{bind-attr width=model.width}}>
+
+{{textarea value=model.userDescription cols="80" rows="6"}}
+
+
+{{textarea value=model.processedInformation cols="80" rows="6" disabled=true}}
+
 
 </div>
 
 <div class="row">
-
+  <div class="col-md-4"></div>
+  <div class="col-md-4"><button {{action 'savePhotoDetails'}} class="btn  btn-default" type="button">Save</button></div>
+  <div class="col-md-4"><button {{action 'processPhoto'}} class="btn btn-primary btn-default" type="button">Process</button></div>
 </div>

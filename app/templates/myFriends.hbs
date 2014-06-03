@@ -7,11 +7,11 @@
   {{#each photoDetail in photoDetails}}
     <div class="media" {{action showPhotoDetails photoDetail on="click"}}>
       <a class="pull-left" href="#">
-        <img class="media-object" {{bind-attr src=photoDetail.url}} width="100px" height="100px">
+        <img class="media-object" {{bind-attr src=photoDetail.urlThumb}} width="100px" height="100px">
       </a>
       <div class="media-body">
-        <h4 class="media-heading">photoDetail.name</h4>
-        Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+        <h4 class="media-heading">{{photoDetail.name}}</h4>
+          {{photoDetail.userDescription}}
       </div>
     </div>
   {{/each}}

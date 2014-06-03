@@ -14,7 +14,7 @@ RemembermeWeb.MyFriendsRoute = RemembermeWeb.AuthentificatedRoute.extend({
 
         if (response.success) {
           console.log("success");
-          controller.set('photoDetails', response.photoDetails);
+          controller.set('photoDetails', response.data);
           controller.set('userId', applicationController.userId);
         } else {
           console.log("unsuccess");
