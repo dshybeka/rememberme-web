@@ -80,17 +80,19 @@ RemembermeWeb.PhotoDetailsController = Ember.Controller.extend({
   },
 
 
-  sentProcessedInfo: function sentProcessedInfo(xmlDoc) {
+  sentProcessedInfo: function sentProcessedInfo(processedData) {
 
       var self = this;
 
-      console.log("sentProcessedInfo ?? -> " + xmlDoc.int_response);
+      console.log("sentProcessedInfo ?? -> " + processedData);
 
       self.set('errorMessage', null);
       $.ajax({
         url: "http://localhost:8090/RememberMe/user/" + self.get('model').userId +"/photo/" + self.get('model').id + "/processed",
         type: "POST",
-        data: xmlDoc,
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify(processedData),
         async: false
       }).then(function(response) {
 
@@ -108,24 +110,21 @@ RemembermeWeb.PhotoDetailsController = Ember.Controller.extend({
     },
 
     getImageInfo: function getImageInfo(image_uid) {
-      var msg = '<?xml version="1.0" encoding="utf-8"?><ImageInfoRequestUid><api_key>d45fd466-51e2-4701-8da8-04351c872236</api_key><api_secret>171e8465-f548-401d-b63b-caf0dc28df5f</api_secret>' +
-              '<img_uid>' + image_uid + '</img_uid></ImageInfoRequestUid>';
+
+      var msgJson = '{"api_key": "d45fd466-51e2-4701-8da8-04351c872236","api_secret":"171e8465-f548-401d-b63b-caf0dc28df5f","img_uid":"'+ image_uid + '" }';
       var self = this;
 
       $.support.cors = true;
       $.ajax({
           crossDomain: true,
-          url: 'http://www.betafaceapi.com/service.svc/GetImageInfo',
+          url: 'http://betafaceapi.com/service_json.svc/GetImageInfo',
           type: 'post',
-          contentType: 'application/xml',
           processData: false,
-          data: msg,
-          dataType: 'xml',
-          success: function (data, textStatus, jqXHR) {
-              var xmlDocRoot = $.parseXML(jqXHR.responseText);
-              var xmlDoc = $(xmlDocRoot).children("BetafaceImageInfoResponse");
-              var int_response = parseInt($(xmlDoc).children("int_response").text());
-              var string_response = $(xmlDoc).children("string_response").text();
+          contentType: 'application/json',
+          data: msgJson,
+          dataType: 'json',
+          success: function (response) {
+              var int_response = response.int_response;
               if (int_response == 1) {
                   //image is in the queue
                   //doUpdateImage(image_uid, 'in queue', 0);
@@ -133,17 +132,22 @@ RemembermeWeb.PhotoDetailsController = Ember.Controller.extend({
               }
               else if (int_response == 0) {
                   //image processed
-                  console.log("response is 0!");
+                  for (var key in response) {
+                      if (response.hasOwnProperty(key)) {
+                          console.log("key " + key);
+                      }
+                  }
+                  console.log("response is 0! " + response.faces);
                   //parseImageInfo(image_uid, xmlDoc);
-                  self.sentProcessedInfo(string_response);
-                  console.log("xmlDoc " + string_response);
+                  self.sentProcessedInfo(response);
+                  // console.log("xmlDoc " + $(xmlDoc).children("faces").text());
               }
               else {
                   //error
                   //doUpdateImage(image_uid, string_response, 0);
 
                   console.info(int_response);
-                  console.info(string_response);
+                  // console.info(string_response);
               }
           },
           error: function (jqXHR, textStatus, errorThrown) {
