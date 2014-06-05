@@ -1,4 +1,5 @@
 RemembermeWeb.UploadFileView = Em.View.extend({
+
   didInsertElement : function(){
 
     var applicationController = window.RemembermeWeb.__container__.lookup('controller:application');
@@ -16,5 +17,9 @@ RemembermeWeb.UploadFileView = Em.View.extend({
     Ember.run.scheduleOnce('afterRender', this, function(){
       Dropzone.discover();
     });
+  },
+
+  handleFileSelect: function() {
+    console.log("Yes@");
   }
 });
