@@ -8,7 +8,12 @@
 
 <div class="row">
 
-<img class="media-object" {{bind-attr src=model.url}} {{bind-attr height=model.height}} {{bind-attr width=model.width}}>
+<img id="cur-image" crossorigin="anonymous" class="media-object" {{bind-attr src=model.url}} {{bind-attr height=model.height}} {{bind-attr width=model.width}}>
+
+<hr class="restrict">
+
+<canvas id="image-canvas" >
+</canvas>
 
 {{textarea value=model.userDescription cols="80" rows="6"}}
 
