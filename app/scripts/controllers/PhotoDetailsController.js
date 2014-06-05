@@ -32,50 +32,55 @@ RemembermeWeb.PhotoDetailsController = Ember.Controller.extend({
 
       var self = this;
 
-      var encoded64 = self.getBase64Image(document.getElementById('cur-image'));
+      if (!self.get('model').isProcessed) {
 
-      var detection_flags = "cropface,recognition,propoints,classifiers,extended";
-      var image_filename = self.get('model').name;
-      var base64_data = encoded64;
-      var msg = '<?xml version="1.0" encoding="utf-8"?><ImageRequestBinary xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' +
-                  '<api_key>d45fd466-51e2-4701-8da8-04351c872236</api_key><api_secret>171e8465-f548-401d-b63b-caf0dc28df5f</api_secret>' +
-                  '<detection_flags>' + detection_flags + '</detection_flags>' +
-                  '<imagefile_data>' + base64_data + '</imagefile_data>' +
-                  '<original_filename>' + image_filename + '</original_filename>' +
-                  '</ImageRequestBinary>';
+        var encoded64 = self.getBase64Image(document.getElementById('cur-image'));
+
+        var detection_flags = "cropface,recognition,propoints,classifiers,extended";
+        var image_filename = self.get('model').name;
+        var base64_data = encoded64;
+        var msg = '<?xml version="1.0" encoding="utf-8"?><ImageRequestBinary xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' +
+                    '<api_key>d45fd466-51e2-4701-8da8-04351c872236</api_key><api_secret>171e8465-f548-401d-b63b-caf0dc28df5f</api_secret>' +
+                    '<detection_flags>' + detection_flags + '</detection_flags>' +
+                    '<imagefile_data>' + base64_data + '</imagefile_data>' +
+                    '<original_filename>' + image_filename + '</original_filename>' +
+                    '</ImageRequestBinary>';
 
 
-      $.support.cors = true;
-      $.ajax({
-          crossDomain: true,
-          url: 'http://www.betafaceapi.com/service.svc/UploadNewImage_File',
-          type: 'post',
-          contentType: 'application/xml',
-          processData: false,
-          data: msg,
-          dataType: 'xml',
-          success: function (data, textStatus, jqXHR) {
-              var xmlDocRoot = $.parseXML(jqXHR.responseText);
-              var xmlDoc = $(xmlDocRoot).children("BetafaceImageResponse");
-              var int_response = parseInt($(xmlDoc).children("int_response").text());
-              var string_response = $(xmlDoc).children("string_response").text();
-              if (int_response == 0) {
-                  var image_uid = $(xmlDoc).children("img_uid").text();
-                  console.log("image_uid " + image_uid);
-                  self.get('model').helpUid = image_uid;
-                  self.getImageInfo(image_uid);
-              }
-              else {
-                  console.log("some error =(");
-                  console.info(int_response);
-                  console.info(string_response);
-              }
-          },
-          error: function (jqXHR, textStatus, errorThrown) {
-              console.info(textStatus);
-          }
-      });
-
+        $.support.cors = true;
+        $.ajax({
+            crossDomain: true,
+            url: 'http://www.betafaceapi.com/service.svc/UploadNewImage_File',
+            type: 'post',
+            contentType: 'application/xml',
+            processData: false,
+            data: msg,
+            dataType: 'xml',
+            success: function (data, textStatus, jqXHR) {
+                var xmlDocRoot = $.parseXML(jqXHR.responseText);
+                var xmlDoc = $(xmlDocRoot).children("BetafaceImageResponse");
+                var int_response = parseInt($(xmlDoc).children("int_response").text());
+                var string_response = $(xmlDoc).children("string_response").text();
+                if (int_response == 0) {
+                    var image_uid = $(xmlDoc).children("img_uid").text();
+                    console.log("image_uid " + image_uid);
+                    self.get('model').helpUid = image_uid;
+                    self.get('model').isProcessed = true;
+                    self.getImageInfo(image_uid);
+                }
+                else {
+                    console.log("some error =(");
+                    console.info(int_response);
+                    console.info(string_response);
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.info(textStatus);
+            }
+        });
+      } else {
+        console.log("Image already processed, Sorry");
+      }
     }
   },
 
@@ -98,7 +103,7 @@ RemembermeWeb.PhotoDetailsController = Ember.Controller.extend({
 
           if (response.success) {
             console.log("success");
-
+            self.set('model', response.data);
           } else {
             console.log("unsuccess");
             self.set('errorMessage', "Sorry, could not update photo =( try later!");
@@ -132,11 +137,6 @@ RemembermeWeb.PhotoDetailsController = Ember.Controller.extend({
               }
               else if (int_response == 0) {
                   //image processed
-                  for (var key in response) {
-                      if (response.hasOwnProperty(key)) {
-                          console.log("key " + key);
-                      }
-                  }
                   console.log("response is 0! " + response.faces);
                   //parseImageInfo(image_uid, xmlDoc);
                   self.sentProcessedInfo(response);
