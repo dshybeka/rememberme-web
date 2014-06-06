@@ -8,19 +8,15 @@
 
 <div class="row">
 
-  <div class="col-md-6" style="
-        width: 500px;
-        height: 500px;
-    ">
-
-    <img id="cur-image" crossorigin="anonymous" class="media-object" {{bind-attr src=model.url}} {{bind-attr height=model.height}} {{bind-attr width=model.width}} >
+  <div class="col-md-6 bordered" >
+    <img id="cur-image" crossorigin="anonymous" class="media-object col-md-12" {{bind-attr src=model.url}} >
   </div>
 
-  <div class="col-md-6">
+  <div class="col-md-6 bordered">
     <h4>Following people were found:</h4>
 
     {{#each faceImage in faceImages}}
-        <form class="media" {{action updateFaceDetails faceImage on="submit"}}>
+        <form class="media col-md-12" {{action updateFaceDetails faceImage on="submit"}}>
           <a class="pull-left" href="#">
             <img class="media-object" crossorigin="anonymous" {{bind-attr src=faceImage.data}} {{bind-attr height=faceImage.height}} {{bind-attr width=faceImage.width}}>
           </a>
@@ -30,9 +26,7 @@
           </div>
         </form>
         <h4 class="col-md-offset-3" {{action findMatches faceImage}}>Help me!</h4>
-        {{#each matchImage in matchImages}}
-          <li>{{matchImage}}</li>
-        {{/each}}
+
     {{/each}}
   </div>
 
@@ -41,9 +35,9 @@
 <hr class="restrict">
 
 <div class="row">
-  {{textarea value=model.userDescription cols="80" rows="6"}}
+  {{textarea value=model.userDescription cols="80" rows="6" placeholder="No information exists for this photo."}}
 
-  {{textarea value=model.processedInformation cols="80" rows="6" disabled=true}}
+  {{textarea value=model.processedInformation cols="80" rows="6" disabled=true placeholder="No information exists for this photo."}}
 </div>
 
 <div class="row">

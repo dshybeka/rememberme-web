@@ -22,7 +22,7 @@ RemembermeWeb.PhotoDetailsRoute = RemembermeWeb.AuthentificatedRoute.extend({
         if (response.success) {
           console.log("success");
           curModel = response.data;
-          console.log("model in route " + curModel.faces.helpUid);
+          console.log("model in route " + curModel.id);
         } else {
           console.log("unsuccess");
           curModel.errorMessage = "Sorry, photo was not found =(";

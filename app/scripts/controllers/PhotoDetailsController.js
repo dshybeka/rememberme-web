@@ -92,7 +92,7 @@ RemembermeWeb.PhotoDetailsController = Ember.Controller.extend({
 
       var self = this;
 
-      if (!self.get('model').isProcessed) {
+      if (self.get('faceImages').length == 0) {
 
         var encoded64 = self.getBase64Image(document.getElementById('cur-image'));
 
@@ -139,6 +139,7 @@ RemembermeWeb.PhotoDetailsController = Ember.Controller.extend({
             }
         });
       } else {
+        self.get('model').isProcessed = false;
         console.log("Image already processed, Sorry");
       }
     },
@@ -191,7 +192,7 @@ RemembermeWeb.PhotoDetailsController = Ember.Controller.extend({
             if (int_response == 1) {
                 //image is in the queue
                 //doUpdateImage(image_uid, 'in queue', 0);
-                setTimeout(function () { getImageInfo(image_uid); }, 500);
+                setTimeout(function () { self.getImageInfo(image_uid); }, 500);
             }
             else if (int_response == 0) {
                 //image processed
@@ -247,6 +248,8 @@ RemembermeWeb.PhotoDetailsController = Ember.Controller.extend({
     getRecognitionResult: function getRecognitionResult(faceUid, recognizeId) {
 
       var self = this;
+      console.log("localStorage.userId " + localStorage.userId);
+      var userId =  localStorage.userId == null ? self.get('model').userId : localStorage.userId;
 
       var recognicedUid = "";
       var msgJsonRecognitionResult = '{"api_key": "d45fd466-51e2-4701-8da8-04351c872236","api_secret":"171e8465-f548-401d-b63b-caf0dc28df5f","recognize_uid":"'+ recognizeId + '" }';
@@ -262,14 +265,15 @@ RemembermeWeb.PhotoDetailsController = Ember.Controller.extend({
           async: false,
           success: function (response) {
               var int_response = response.int_response;
-              console.log("int_response " + int_response);
+              console.log("int_response get result " + int_response);
               if (int_response == 1) {
                 //request is in the queue
-                setTimeout(function () { self.getRecognitionResult(recognizeId); }, 500);
+                console.log("set timeoit");
+                setTimeout(function () { getRecognitionResult(faceUid, recognizeId); }, 500);
               } else if (int_response == 0) {
                   //image processed
-                console.log("recognized id! " + response.faces_matches[0].face_uid);
-                recognicedUid = response.faces_matches[0].face_uid;
+                console.log("recognized id in get result! " + response.faces_matches[0].face_uid);
+                recognicedUid = response.faces_matches[0].matches[0].face_uid;
               } else {
                   //error
                   //doUpdateImage(image_uid, string_response, 0);
@@ -282,25 +286,28 @@ RemembermeWeb.PhotoDetailsController = Ember.Controller.extend({
               console.info(textStatus);
           }
       });
+  
+      if (recognicedUid != "") {
+        console.log("in recognition result3 " + userId);
+        $.ajax({
+            url: "http://localhost:8090/RememberMe/user/" + userId +"/photo/face/uid/" + recognicedUid,
+            type: "GET",
+            async: false
+        }).then(function(response) {
 
-      $.ajax({
-          url: "http://localhost:8090/RememberMe/user/" + self.get('model').userId +"/photo/face/uid/" + recognicedUid,
-          type: "GET",
-          async: false
-      }).then(function(response) {
-
-          if (response.success) {
-            console.log("success " + response.data);
-            var personName = response.data;
-            $('#' + faceUid).val(personName);
-          } else {
-            console.log("unsuccess");
-            self.set('errorMessage', "Sorry, no matches found =(");
-          }
-      }, function() {
-        console.log("error!");
-        self.set('errorMessage', "Sorry, no matches found =(");
-      });
+            if (response.success) {
+              console.log("success " + response.data.personName + " " + response.data.uid);
+              var personName = response.data.personName;
+              $('#' + faceUid).val(personName);
+            } else {
+              console.log("unsuccess");
+              self.set('errorMessage', "Sorry, no matches found =(");
+            }
+        }, function() {
+          console.log("error!");
+          self.set('errorMessage', "Sorry, no matches found =(");
+        });
+      }
     },
 
     getBase64Image: function getBase64Image(img) {
@@ -312,8 +319,8 @@ RemembermeWeb.PhotoDetailsController = Ember.Controller.extend({
       var ctx = canvas.getContext("2d");
       ctx.drawImage(img, 0, 0);
 
-      var dataURL = canvas.toDataURL("image/png");
+      var dataURL = canvas.toDataURL("image/jpeg");
 
-      return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+      return dataURL.replace(/^data:image\/(png|jpeg|jpg);base64,/, "");
     }
 })
