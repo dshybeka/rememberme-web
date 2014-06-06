@@ -6,7 +6,7 @@ RemembermeWeb.Router.map(function () {
 
   this.resource('myFriends', { path : '/myFriends' });
 
-  this.resource('photoDetails', { path : '/myFriends/photoDetails/:photoId' });
+  this.resource('photoDetails', { path : '/myFriends/photoDetails/:id' });
 
   this.resource('uploadFile', { path : '/uploadFile' });
 

@@ -28,6 +28,66 @@ RemembermeWeb.PhotoDetailsController = Ember.Controller.extend({
       });
     },
 
+    findMatches: function findMatches(curFace) {
+
+      var self = this;
+
+      var targets = "";
+      $.ajax({
+          url: "http://localhost:8090/RememberMe/user/" + self.get('model').userId +"/photo/face/uid/" + curFace.uid + "/targets",
+          type: "GET",
+          async: false
+      }).then(function(response) {
+
+          if (response.success) {
+            console.log("success");
+            targets = response.data;
+          } else {
+            console.log("unsuccess");
+            self.set('errorMessage', "Sorry, no matches found =(");
+          }
+      }, function() {
+        console.log("error!");
+        self.set('errorMessage', "Sorry, no matches found =(");
+      });
+      
+
+      var msgJson = '{"api_key": "d45fd466-51e2-4701-8da8-04351c872236","api_secret":"171e8465-f548-401d-b63b-caf0dc28df5f","faces_uids":"'+ curFace.uid + '","targets":"' + targets +'" }';
+      var recognizeId = "";
+      var recognicedUid = "";
+      $.support.cors = true;
+      $.ajax({
+          crossDomain: true,
+          url: 'http://betafaceapi.com/service_json.svc/RecognizeFaces',
+          type: 'post',
+          processData: false,
+          contentType: 'application/json',
+          data: msgJson,
+          dataType: 'json',
+          async: false,
+          success: function (response) {
+              var int_response = response.int_response;
+              if (int_response == 0) {
+                  //image processed
+                console.log("recognized id! " + response.recognize_uid);
+                recognizeId = response.recognize_uid;
+              }
+              else {
+                  //error
+                  //doUpdateImage(image_uid, string_response, 0);
+
+                console.info(int_response);
+                  // console.info(string_response);
+              }
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+              console.info(textStatus);
+          }
+      });
+
+      self.getRecognitionResult(curFace.uid, recognizeId);
+    },
+
     processPhoto: function() {
 
       var self = this;
@@ -81,9 +141,78 @@ RemembermeWeb.PhotoDetailsController = Ember.Controller.extend({
       } else {
         console.log("Image already processed, Sorry");
       }
+    },
+
+    updateFaceDetails: function(face) {
+      var self = this;
+      console.log("faceid " + face.id);
+
+      self.set('errorMessage', null);
+      $.ajax({
+        url: "http://localhost:8090/RememberMe/user/" + self.get('model').userId +"/photo/face/" + face.id,
+        type: "PUT",
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify(face),
+        async: false
+      }).then(function(response) {
+
+          if (response.success) {
+            console.log("success");
+
+          } else {
+            console.log("unsuccess");
+            self.set('errorMessage', "Could not update information about this face, please try later");
+          }
+      }, function() {
+        console.log("what happened error?!");
+        self.set('errorMessage', "Could not update information about this face, please try later");
+      });
     }
   },
 
+  getImageInfo: function getImageInfo(image_uid) {
+
+    var msgJson = '{"api_key": "d45fd466-51e2-4701-8da8-04351c872236","api_secret":"171e8465-f548-401d-b63b-caf0dc28df5f","img_uid":"'+ image_uid + '" }';
+    var self = this;
+
+    $.support.cors = true;
+    $.ajax({
+        crossDomain: true,
+        url: 'http://betafaceapi.com/service_json.svc/GetImageInfo',
+        type: 'post',
+        processData: false,
+        contentType: 'application/json',
+        data: msgJson,
+        dataType: 'json',
+        async: false,
+        success: function (response) {
+            var int_response = response.int_response;
+            if (int_response == 1) {
+                //image is in the queue
+                //doUpdateImage(image_uid, 'in queue', 0);
+                setTimeout(function () { getImageInfo(image_uid); }, 500);
+            }
+            else if (int_response == 0) {
+                //image processed
+                console.log("response is 0! " + response.faces);
+                //parseImageInfo(image_uid, xmlDoc);
+                self.sentProcessedInfo(response);
+                // console.log("xmlDoc " + $(xmlDoc).children("faces").text());
+            }
+            else {
+                //error
+                //doUpdateImage(image_uid, string_response, 0);
+
+                console.info(int_response);
+                // console.info(string_response);
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.info(textStatus);
+        }
+    });
+  },
 
   sentProcessedInfo: function sentProcessedInfo(processedData) {
 
@@ -103,7 +232,8 @@ RemembermeWeb.PhotoDetailsController = Ember.Controller.extend({
 
           if (response.success) {
             console.log("success");
-            self.set('model', response.data);
+            // self.set('model', response.data);
+            self.transitionToRoute('photoDetails', response.data); 
           } else {
             console.log("unsuccess");
             self.set('errorMessage', "Sorry, could not update photo =( try later!");
@@ -114,45 +244,62 @@ RemembermeWeb.PhotoDetailsController = Ember.Controller.extend({
       });
     },
 
-    getImageInfo: function getImageInfo(image_uid) {
+    getRecognitionResult: function getRecognitionResult(faceUid, recognizeId) {
 
-      var msgJson = '{"api_key": "d45fd466-51e2-4701-8da8-04351c872236","api_secret":"171e8465-f548-401d-b63b-caf0dc28df5f","img_uid":"'+ image_uid + '" }';
       var self = this;
 
+      var recognicedUid = "";
+      var msgJsonRecognitionResult = '{"api_key": "d45fd466-51e2-4701-8da8-04351c872236","api_secret":"171e8465-f548-401d-b63b-caf0dc28df5f","recognize_uid":"'+ recognizeId + '" }';
       $.support.cors = true;
       $.ajax({
           crossDomain: true,
-          url: 'http://betafaceapi.com/service_json.svc/GetImageInfo',
+          url: 'http://betafaceapi.com/service_json.svc/GetRecognizeResult',
           type: 'post',
           processData: false,
           contentType: 'application/json',
-          data: msgJson,
+          data: msgJsonRecognitionResult,
           dataType: 'json',
+          async: false,
           success: function (response) {
               var int_response = response.int_response;
+              console.log("int_response " + int_response);
               if (int_response == 1) {
-                  //image is in the queue
-                  //doUpdateImage(image_uid, 'in queue', 0);
-                  setTimeout(function () { getImageInfo(image_uid); }, 500);
-              }
-              else if (int_response == 0) {
+                //request is in the queue
+                setTimeout(function () { self.getRecognitionResult(recognizeId); }, 500);
+              } else if (int_response == 0) {
                   //image processed
-                  console.log("response is 0! " + response.faces);
-                  //parseImageInfo(image_uid, xmlDoc);
-                  self.sentProcessedInfo(response);
-                  // console.log("xmlDoc " + $(xmlDoc).children("faces").text());
-              }
-              else {
+                console.log("recognized id! " + response.faces_matches[0].face_uid);
+                recognicedUid = response.faces_matches[0].face_uid;
+              } else {
                   //error
                   //doUpdateImage(image_uid, string_response, 0);
 
-                  console.info(int_response);
+                console.info(int_response);
                   // console.info(string_response);
               }
           },
           error: function (jqXHR, textStatus, errorThrown) {
               console.info(textStatus);
           }
+      });
+
+      $.ajax({
+          url: "http://localhost:8090/RememberMe/user/" + self.get('model').userId +"/photo/face/uid/" + recognicedUid,
+          type: "GET",
+          async: false
+      }).then(function(response) {
+
+          if (response.success) {
+            console.log("success " + response.data);
+            var personName = response.data;
+            $('#' + faceUid).val(personName);
+          } else {
+            console.log("unsuccess");
+            self.set('errorMessage', "Sorry, no matches found =(");
+          }
+      }, function() {
+        console.log("error!");
+        self.set('errorMessage', "Sorry, no matches found =(");
       });
     },
 

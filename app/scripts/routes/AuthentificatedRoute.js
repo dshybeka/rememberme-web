@@ -17,6 +17,8 @@ RemembermeWeb.AuthentificatedRoute = Ember.Route.extend({
 
   isValidToken: function() {
 
+    var self = this;
+
     var result = false;
     var curToken = this.controllerFor('application').get('token');
     if (curToken == '') {
@@ -24,17 +26,22 @@ RemembermeWeb.AuthentificatedRoute = Ember.Route.extend({
     }
     console.log("curToken " + curToken);
 
-    $.ajax({
-        url: "http://localhost:8090/RememberMe/api/validate",
-        type: "POST",
-        headers: { 
-         'X-Auth-Token': curToken
-        },
-        data: JSON.stringify({}),
-        async: false
-    }).then(function(response) {
-        result = curToken == response.token;
-    });
+    if (curToken != null) {
+      $.ajax({
+          url: "http://localhost:8090/RememberMe/api/validate",
+          type: "POST",
+          headers: { 
+           'X-Auth-Token': curToken
+          },
+          data: JSON.stringify({}),
+          async: false
+      }).then(function(response) {
+          result = curToken == response.token;
+      }, function() {
+        self.controllerFor('application').set('token', "");
+        localStorage.clear();
+      });
+    }
 
     return result;
   }

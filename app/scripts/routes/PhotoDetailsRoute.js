@@ -1,20 +1,20 @@
 RemembermeWeb.PhotoDetailsRoute = RemembermeWeb.AuthentificatedRoute.extend({
 
   queryParams: {
-    photoId: {
+    id: {
       refreshModel: true
     }
   },
 
   model: function (params) {
-    console.log("params " + params.photoId);
+    console.log("params " + params.id);
 
     var curModel = {};
 
     var applicationController = window.RemembermeWeb.__container__.lookup('controller:application');
 
     $.ajax({
-        url: "http://localhost:8090/RememberMe/user/" + applicationController.userId +"/photo/" + params.photoId + "/details",
+        url: "http://localhost:8090/RememberMe/user/" + applicationController.userId +"/photo/" + params.id + "/details",
         type: "GET",
         async: false
     }).then(function(response) {
@@ -29,7 +29,6 @@ RemembermeWeb.PhotoDetailsRoute = RemembermeWeb.AuthentificatedRoute.extend({
         }
     }, function() {
       console.log("error!");
-      controller.set('errorMessage', "Sorry, some problems while getting this image");
     });
 
     return curModel;
@@ -39,17 +38,23 @@ RemembermeWeb.PhotoDetailsRoute = RemembermeWeb.AuthentificatedRoute.extend({
 
     var faceImages = [];
 
-    console.log("model in controller " + model.faces);
+    console.log("model in controller " + model.id);
     if (model.id != null) {
       controller.set('model', model);
       if (model.isProcessed) {
         for (var i = 0; i < model.faces.length; i++) {
-          console.log("in for! " + model.faces[i].helpUid);
           var faceImageData = this.getFaceImage(model.faces[i].helpUid);
           console.log("faceImageData " + faceImageData);
-          faceImages.push({data: faceImageData, personName: model.faces[i].personName});
+          faceImages.push({data: faceImageData,
+                           personName: model.faces[i].personName,
+                           width: model.faces[i].width,
+                           height: model.faces[i].height,
+                           uid: model.faces[i].helpUid,
+                           id: model.faces[i].id});
         }
         controller.set('faceImages', faceImages);
+      } else {
+        controller.set('faceImages', []);
       }
     }
   },
@@ -128,33 +133,4 @@ RemembermeWeb.PhotoDetailsRoute = RemembermeWeb.AuthentificatedRoute.extend({
         return faceImageData;
     }
 
-  // setupController: function(controller, context, params) {
-
-  //   var photos = [];
-
-  //   var applicationController = window.RemembermeWeb.__container__.lookup('controller:application');
-
-  //   console.log("queryParams.photoId " + params.photoId);
-
-  //   $.ajax({
-  //       url: "http://localhost:8090/RememberMe/user/" + applicationController.userId +"/photo" + params.photoId + "details",
-  //       type: "GET",
-  //       async: false
-  //   }).then(function(response) {
-
-  //       if (response.success) {
-  //         console.log("success");
-  //         controller.set('photoDetails', response.data);
-  //         controller.set('userId', applicationController.userId);
-  //       } else {
-  //         console.log("unsuccess");
-  //         controller.set('errorMessage', "Sorry, no photos found =(");
-  //       }
-  //   }, function() {
-  //     console.log("error!");
-  //     controller.set('errorMessage', "Sorry, some problems while getting this image");
-  //   });
-
-  //   controller.set("photos", photos);
-  // }
 });
